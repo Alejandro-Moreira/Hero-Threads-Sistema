@@ -1,0 +1,25 @@
+{
+  "name": "renta-de-carros",
+  "version": "1.0.0",
+  "description": "Backend Renta de Carros",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node --watch src/index.js",
+    "dev": "nodemon src/index.js",
+    "seed": "node src/seed.js",
+    "seed:ventas": "node src/seed_ventas.js",
+    "migrate": "node src/migrate.js",
+    "test": "test"
+  },
+  "author": "Miguel Paredes",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.1",
+    "mongoose": "^8.2.3",
+    "nodemailer": "^7.0.5"
+  }
+}
