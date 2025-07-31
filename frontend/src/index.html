@@ -1,0 +1,1366 @@
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hero Threads</title>
+    <link rel="icon" type="image/png" href="Icono2.png" />
+
+    <!-- Meta tags para redes sociales -->
+    <meta property="og:image" content="https://4tsix0yujj.ufs.sh/f/2vMRHqOYUHc0K5prXUEjR7oilQcqGuVyEA8Sm1pf4v95nLIB" />
+    <meta property="og:image:alt" content="Imagen del proyecto" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://4tsix0yujj.ufs.sh/f/2vMRHqOYUHc0K5prXUEjR7oilQcqGuVyEA8Sm1pf4v95nLIB" />
+
+    <!-- TailwindCSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- React & Babel -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef, useCallback, useMemo, createContext, useContext, StrictMode } = React;
+        const { createRoot } = ReactDOM;
+
+        // /components/ShopHeroSection.js
+        function ShopHeroSection({ onExploreClick }) {
+            return (
+                <section className="relative w-full h-screen bg-gradient-to-br from-gray-900 to-gray-700 flex items-center justify-center text-center overflow-hidden">
+                    <div className="absolute inset-0 z-0">
+                        <img
+                            src="https://4tsix0yujj.ufs.sh/f/2vMRHqOYUHc0qoCyfZvUMgOfLW4S62w7etx01aYAN8bRycsz"
+                            alt="Superhéroes"
+                            className="w-full h-full object-cover opacity-30"
+                        />
+                    </div>
+                    <div className="relative z-10 p-6 max-w-3xl mx-auto bg-black bg-opacity-50 rounded-xl shadow-2xl backdrop-blur-sm">
+                        <h2 className="text-5xl md:text-7xl font-extrabold text-white mb-6 leading-tight">
+                            Viste a tu Héroe Interior
+                        </h2>
+                        <p className="text-xl md:text-2xl text-gray-200 mb-8">
+                            Descubre nuestra colección exclusiva de camisetas sublimadas con tus superhéroes favoritos.
+                        </p>
+                        <button
+                            onClick={onExploreClick}
+                            className="px-8 py-4 bg-red-600 text-white text-lg font-semibold rounded-full shadow-lg hover:bg-red-700 transition-all duration-300 transform hover:scale-105"
+                        >
+                            Explorar Colección
+                        </button>
+                    </div>
+                </section>
+            );
+        }
+
+        // /components/ShopProductCard.js
+        function ShopProductCard({ product, onAddToCart }) {
+            return (
+                <div className="bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-2xl">
+                    <div className="relative w-full h-64 overflow-hidden">
+                        <img
+                            src={product.image}
+                            alt={product.name}
+                            className="w-full h-full object-cover object-center transition-transform duration-300 hover:scale-110"
+                        />
+                        <div className="absolute top-3 right-3 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full">
+                            Nuevo
+                        </div>
+                    </div>
+                    <div className="p-6">
+                        <h3 className="text-xl font-semibold text-gray-900 mb-2">{product.name}</h3>
+                        <p className="text-gray-600 text-sm mb-4">{product.description}</p>
+                        <div className="flex justify-between items-center">
+                            <span className="text-2xl font-bold text-gray-900">${product.price.toFixed(2)}</span>
+                            <button
+                                onClick={() => onAddToCart(product)}
+                                className="px-5 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors duration-300"
+                            >
+                                Agregar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // /components/ProductosDashboard.js
+        function ProductosDashboard() {
+            const [productos, setProductos] = useState([]);
+
+            useEffect(() => {
+                fetch("http://localhost:3000/api/productos")
+                    .then((res) => res.json())
+                    .then((data) => setProductos(data))
+                    .catch((error) => console.error("Error al obtener productos:", error));
+            }, []);
+
+            return (
+                <div className="p-8">
+                    <h2 className="text-3xl font-bold mb-6 text-center text-white">Dashboard de Productos</h2>
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full bg-white rounded-xl shadow-xl overflow-hidden">
+                            <thead className="bg-gray-800 text-white">
+                                <tr>
+                                    <th className="py-3 px-4 text-left">Nombre</th>
+                                    <th className="py-3 px-4 text-left">Precio</th>
+                                    <th className="py-3 px-4 text-left">Descripción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {productos.map((producto) => (
+                                    <tr key={producto._id} className="border-b border-gray-200 hover:bg-gray-100">
+                                        <td className="py-2 px-4">{producto.name}</td>
+                                        <td className="py-2 px-4">${producto.price}</td>
+                                        <td className="py-2 px-4">{producto.description}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            );
+        }
+
+        // /components/ShopProductGrid.js
+        function ShopProductGrid({ products, onAddToCart }) {
+            return (
+                <section className="container mx-auto px-4 py-12">
+                    <h2 className="text-4xl font-bold text-center text-gray-900 mb-10">Nuestra Colección</h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                        {products.map(product => (
+                            <ShopProductCard key={product._id || product.id} product={product} onAddToCart={onAddToCart} />
+                        ))}
+                    </div>
+                </section>
+            );
+        }
+
+        // /components/AdminProductManager.js
+        function AdminProductManager({ products, onUpdateProduct, onAddProduct, onDeleteProduct }) {
+            const [newProduct, setNewProduct] = useState({
+                name: '',
+                description: '',
+                price: '',
+                image: ''
+            });
+            const [editId, setEditId] = useState(null);
+            const [editFields, setEditFields] = useState({});
+
+            const handleInputChange = (e) => {
+                const { name, value } = e.target;
+                setNewProduct({ ...newProduct, [name]: value });
+            };
+
+            const handleAddProduct = () => {
+                if (newProduct.name && newProduct.price && newProduct.image) {
+                    // Check if name already exists
+                    const existingProduct = products.find(p =>
+                        p.name.toLowerCase().trim() === newProduct.name.toLowerCase().trim()
+                    );
+                    if (existingProduct) {
+                        alert('Ya existe un producto con este nombre. Por favor, elige un nombre único.');
+                        return;
+                    }
+
+                    onAddProduct({
+                        ...newProduct,
+                        price: parseFloat(newProduct.price)
+                    });
+                    setNewProduct({ name: '', description: '', price: '', image: '' });
+                } else {
+                    alert('Por favor, llena todos los campos obligatorios para agregar un producto.');
+                }
+            };
+
+            const handleEditClick = (product) => {
+                setEditId(product._id || product.id);
+                setEditFields({
+                    ...product
+                });
+            };
+
+            const handleEditFieldChange = (e) => {
+                const { name, value } = e.target;
+                setEditFields({ ...editFields, [name]: name === 'price' ? value.replace(/[^0-9.]/g, '') : value });
+            };
+
+            const handleSaveEdit = () => {
+                if (!editFields.name || !editFields.price || !editFields.image) {
+                    alert('Por favor, llena todos los campos obligatorios.');
+                    return;
+                }
+
+                // Check if name already exists (excluding current product)
+                const existingProduct = products.find(p =>
+                    p.name.toLowerCase().trim() === editFields.name.toLowerCase().trim() &&
+                    (p._id || p.id) !== editId
+                );
+                if (existingProduct) {
+                    alert('Ya existe otro producto con este nombre. Por favor, elige un nombre único.');
+                    return;
+                }
+
+                if (window.confirm('¿Estás seguro de guardar los cambios de este producto?')) {
+                    onUpdateProduct(editId, {
+                        ...editFields,
+                        price: parseFloat(editFields.price)
+                    });
+                    setEditId(null);
+                    setEditFields({});
+                }
+            };
+
+            const handleCancelEdit = () => {
+                setEditId(null);
+                setEditFields({});
+            };
+
+            const handleDeleteProduct = (id) => {
+                if (window.confirm('¿Estás seguro de que deseas eliminar este producto?')) {
+                    onDeleteProduct(id);
+                }
+            };
+
+            return (
+                <section className="container mx-auto px-4 py-12">
+                    <h2 className="text-4xl font-bold text-center text-gray-900 mb-10">Administrar Productos</h2>
+
+                    <div className="bg-white rounded-xl shadow-lg p-8 mb-10">
+                        <h3 className="text-2xl font-bold text-gray-900 mb-6">Agregar Nuevo Producto</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                            <input
+                                type="text"
+                                name="name"
+                                placeholder="Nombre del Producto"
+                                value={newProduct.name}
+                                onChange={handleInputChange}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black transition"
+                            />
+                            <input
+                                type="text"
+                                name="description"
+                                placeholder="Descripción"
+                                value={newProduct.description}
+                                onChange={handleInputChange}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black transition"
+                            />
+                            <input
+                                type="number"
+                                name="price"
+                                placeholder="Precio"
+                                value={newProduct.price}
+                                onChange={handleInputChange}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black transition"
+                            />
+                            <input
+                                type="text"
+                                name="image"
+                                placeholder="URL de la Imagen"
+                                value={newProduct.image}
+                                onChange={handleInputChange}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black transition"
+                            />
+                        </div>
+                        <button
+                            onClick={handleAddProduct}
+                            className="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-800 transition-colors font-semibold"
+                        >
+                            Agregar Producto
+                        </button>
+                    </div>
+
+                    <div className="bg-white rounded-xl shadow-lg p-8">
+                        <h3 className="text-2xl font-bold text-gray-900 mb-6">Lista de Productos</h3>
+                        <div className="overflow-x-auto">
+                            <table className="min-w-full bg-white">
+                                <thead>
+                                    <tr className="border-b border-gray-200">
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Imagen</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Descripción</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Precio</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {products.map((product) => (
+                                        <tr key={product._id || product.id} className="border-b border-gray-200 last:border-b-0">
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                {editId === (product._id || product.id) ? (
+                                                    <input
+                                                        type="text"
+                                                        name="image"
+                                                        value={editFields.image}
+                                                        onChange={handleEditFieldChange}
+                                                        className="w-24 px-2 py-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-black transition"
+                                                    />
+                                                ) : (
+                                                    <img src={product.image} alt={product.name} className="w-16 h-16 object-cover rounded-lg" />
+                                                )}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                                {editId === (product._id || product.id) ? (
+                                                    <input
+                                                        type="text"
+                                                        name="name"
+                                                        value={editFields.name}
+                                                        onChange={handleEditFieldChange}
+                                                        className="w-32 px-2 py-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-black transition"
+                                                    />
+                                                ) : (
+                                                    product.name
+                                                )}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                                                {editId === (product._id || product.id) ? (
+                                                    <input
+                                                        type="text"
+                                                        name="description"
+                                                        value={editFields.description}
+                                                        onChange={handleEditFieldChange}
+                                                        className="w-48 px-2 py-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-black transition"
+                                                    />
+                                                ) : (
+                                                    product.description
+                                                )}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                {editId === (product._id || product.id) ? (
+                                                    <input
+                                                        type="number"
+                                                        name="price"
+                                                        value={editFields.price}
+                                                        onChange={handleEditFieldChange}
+                                                        className="w-24 px-2 py-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-black transition"
+                                                    />
+                                                ) : (
+                                                    product.price
+                                                )}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                {editId === (product._id || product.id) ? (
+                                                    <>
+                                                        <button
+                                                            onClick={handleSaveEdit}
+                                                            className="text-green-600 hover:text-green-900 transition-colors mr-2"
+                                                        >
+                                                            Guardar
+                                                        </button>
+                                                        <button
+                                                            onClick={handleCancelEdit}
+                                                            className="text-gray-600 hover:text-gray-900 transition-colors"
+                                                        >
+                                                            Cancelar
+                                                        </button>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <button
+                                                            onClick={() => handleEditClick(product)}
+                                                            className="text-blue-600 hover:text-blue-900 transition-colors mr-2"
+                                                        >
+                                                            Editar
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleDeleteProduct(product._id || product.id)}
+                                                            className="text-red-600 hover:text-red-900 transition-colors"
+                                                        >
+                                                            Eliminar
+                                                        </button>
+                                                    </>
+                                                )}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            );
+        }
+
+        // /components/ReportsSection.js
+        function ReportsSection() {
+            const [salesData, setSalesData] = useState(null);
+            const [analyticsData, setAnalyticsData] = useState(null);
+            const [loading, setLoading] = useState(true);
+            const [error, setError] = useState(null);
+
+            useEffect(() => {
+                const fetchReportsData = async () => {
+                    try {
+                        setLoading(true);
+                        const [salesResponse, analyticsResponse] = await Promise.all([
+                            fetch(`${API_BASE_URL}/reportes/ventas`),
+                            fetch(`${API_BASE_URL}/reportes/analisis`)
+                        ]);
+
+                        if (salesResponse.ok && analyticsResponse.ok) {
+                            const sales = await salesResponse.json();
+                            const analytics = await analyticsResponse.json();
+                            setSalesData(sales);
+                            setAnalyticsData(analytics);
+                        } else {
+                            setError('Error al cargar los reportes');
+                        }
+                    } catch (error) {
+                        setError('Error de conexión');
+                    } finally {
+                        setLoading(false);
+                    }
+                };
+
+                fetchReportsData();
+            }, []);
+
+            if (loading) {
+                return (
+                    <section className="container mx-auto px-4 py-12">
+                        <h2 className="text-4xl font-bold text-center text-gray-900 mb-10">Reportes y Análisis</h2>
+                        <div className="bg-white rounded-xl shadow-lg p-8 max-w-3xl mx-auto text-center">
+                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+                            <p className="mt-4 text-gray-600">Cargando reportes...</p>
+                        </div>
+                    </section>
+                );
+            }
+
+            if (error) {
+                return (
+                    <section className="container mx-auto px-4 py-12">
+                        <h2 className="text-4xl font-bold text-center text-gray-900 mb-10">Reportes y Análisis</h2>
+                        <div className="bg-white rounded-xl shadow-lg p-8 max-w-3xl mx-auto text-center">
+                            <p className="text-red-600">{error}</p>
+                        </div>
+                    </section>
+                );
+            }
+
+            return (
+                <section className="container mx-auto px-4 py-12">
+                    <h2 className="text-4xl font-bold text-center text-gray-900 mb-10">Reportes y Análisis</h2>
+
+                    {/* Información de Ventas */}
+                    <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
+                        <h3 className="text-2xl font-bold text-gray-900 mb-6">Información de Ventas</h3>
+
+                        {/* Métricas principales */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                            <div className="bg-blue-50 rounded-lg p-6 text-center">
+                                <h4 className="text-lg font-semibold text-blue-900 mb-2">Ventas Totales</h4>
+                                <p className="text-3xl font-bold text-blue-600">{salesData?.ventasTotales || 0}</p>
+                            </div>
+                            <div className="bg-green-50 rounded-lg p-6 text-center">
+                                <h4 className="text-lg font-semibold text-green-900 mb-2">Ingresos Totales</h4>
+                                <p className="text-3xl font-bold text-green-600">${(salesData?.ingresosTotales || 0).toFixed(2)}</p>
+                            </div>
+                            <div className="bg-purple-50 rounded-lg p-6 text-center">
+                                <h4 className="text-lg font-semibold text-purple-900 mb-2">Promedio por Venta</h4>
+                                <p className="text-3xl font-bold text-purple-600">
+                                    ${salesData?.ventasTotales > 0 ? (salesData.ingresosTotales / salesData.ventasTotales).toFixed(2) : '0.00'}
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Productos más vendidos */}
+                        <div className="mb-8">
+                            <h4 className="text-xl font-semibold text-gray-900 mb-4">Productos Más Vendidos</h4>
+                            <div className="bg-gray-50 rounded-lg p-6">
+                                {salesData?.productosMasVendidos?.length > 0 ? (
+                                    <div className="space-y-3">
+                                        {salesData.productosMasVendidos.map((producto, index) => (
+                                            <div key={producto._id} className="flex justify-between items-center p-3 bg-white rounded-lg shadow-sm">
+                                                <div className="flex items-center">
+                                                    <span className="text-lg font-bold text-gray-500 mr-3">#{index + 1}</span>
+                                                    <span className="font-semibold text-gray-900">{producto.nombreProducto}</span>
+                                                </div>
+                                                <div className="text-right">
+                                                    <p className="text-sm text-gray-600">Cantidad: {producto.cantidadVendida}</p>
+                                                    <p className="font-semibold text-green-600">${producto.ingresos.toFixed(2)}</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <p className="text-gray-500 text-center">No hay datos de productos vendidos</p>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Ventas por método de pago */}
+                        <div>
+                            <h4 className="text-xl font-semibold text-gray-900 mb-4">Ventas por Método de Pago</h4>
+                            <div className="bg-gray-50 rounded-lg p-6">
+                                {salesData?.ventasPorMetodoPago?.length > 0 ? (
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        {salesData.ventasPorMetodoPago.map((metodo) => (
+                                            <div key={metodo._id} className="bg-white rounded-lg p-4 text-center">
+                                                <h5 className="font-semibold text-gray-900 capitalize">{metodo._id}</h5>
+                                                <p className="text-2xl font-bold text-blue-600">{metodo.cantidad}</p>
+                                                <p className="text-sm text-gray-600">${metodo.total.toFixed(2)}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <p className="text-gray-500 text-center">No hay datos de métodos de pago</p>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Análisis General de la Plataforma */}
+                    <div className="bg-white rounded-xl shadow-lg p-8">
+                        <h3 className="text-2xl font-bold text-gray-900 mb-6">Análisis General de la Plataforma</h3>
+
+                        {/* Métricas de rendimiento */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                            <div className="bg-orange-50 rounded-lg p-6 text-center">
+                                <h4 className="text-lg font-semibold text-orange-900 mb-2">Total de Productos</h4>
+                                <p className="text-3xl font-bold text-orange-600">{analyticsData?.totalProductos || 0}</p>
+                            </div>
+                            <div className="bg-red-50 rounded-lg p-6 text-center">
+                                <h4 className="text-lg font-semibold text-red-900 mb-2">Total de Ventas</h4>
+                                <p className="text-3xl font-bold text-red-600">{analyticsData?.metricasRendimiento?.totalVentas || 0}</p>
+                            </div>
+                            <div className="bg-indigo-50 rounded-lg p-6 text-center">
+                                <h4 className="text-lg font-semibold text-indigo-900 mb-2">Promedio Ticket</h4>
+                                <p className="text-3xl font-bold text-indigo-600">${(analyticsData?.metricasRendimiento?.promedioTicket || 0).toFixed(2)}</p>
+                            </div>
+                        </div>
+
+                        {/* Clientes más activos */}
+                        <div className="mb-8">
+                            <h4 className="text-xl font-semibold text-gray-900 mb-4">Clientes Más Activos</h4>
+                            <div className="bg-gray-50 rounded-lg p-6">
+                                {analyticsData?.clientesMasActivos?.length > 0 ? (
+                                    <div className="space-y-3">
+                                        {analyticsData.clientesMasActivos.map((cliente, index) => (
+                                            <div key={cliente._id} className="flex justify-between items-center p-3 bg-white rounded-lg shadow-sm">
+                                                <div className="flex items-center">
+                                                    <span className="text-lg font-bold text-gray-500 mr-3">#{index + 1}</span>
+                                                    <span className="font-semibold text-gray-900">{cliente._id}</span>
+                                                </div>
+                                                <div className="text-right">
+                                                    <p className="text-sm text-gray-600">Compras: {cliente.compras}</p>
+                                                    <p className="font-semibold text-green-600">${cliente.totalGastado.toFixed(2)}</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <p className="text-gray-500 text-center">No hay datos de clientes</p>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Productos con stock bajo */}
+                        <div>
+                            <h4 className="text-xl font-semibold text-gray-900 mb-4">Productos con Bajo Rendimiento</h4>
+                            <div className="bg-gray-50 rounded-lg p-6">
+                                {analyticsData?.productosStockBajo?.length > 0 ? (
+                                    <div className="space-y-3">
+                                        {analyticsData.productosStockBajo.map((producto) => (
+                                            <div key={producto._id} className="flex justify-between items-center p-3 bg-white rounded-lg shadow-sm">
+                                                <span className="font-semibold text-gray-900">{producto.nombreProducto}</span>
+                                                <div className="text-right">
+                                                    <p className="text-sm text-red-600">Solo {producto.ventasUltimoMes} ventas este mes</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <p className="text-gray-500 text-center">Todos los productos tienen buen rendimiento</p>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            );
+        }
+
+        // /components/ShopHeader.js
+        function ShopHeader({ onNavigate, onSearchChange, cartCount, currentPage, user, onLogout, onLogin, loginError }) {
+            const [showLogin, setShowLogin] = useState(false);
+            const [showRegister, setShowRegister] = useState(false);
+            const [loginEmail, setLoginEmail] = useState('');
+            const [loginPassword, setLoginPassword] = useState('');
+            const [registerName, setRegisterName] = useState('');
+            const [registerEmail, setRegisterEmail] = useState('');
+            const [registerPassword, setRegisterPassword] = useState('');
+            const [registerError, setRegisterError] = useState('');
+            const [registerSuccess, setRegisterSuccess] = useState('');
+
+            const handleLoginSubmit = (e) => {
+                e.preventDefault();
+                onLogin(loginEmail, loginPassword);
+            };
+
+            const handleRegisterSubmit = async (e) => {
+                e.preventDefault();
+                setRegisterError('');
+                setRegisterSuccess('');
+
+                try {
+                    const response = await fetch(`${API_BASE_URL}/clientes/register/public`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            nombre: registerName,
+                            email: registerEmail,
+                            password: registerPassword
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        setRegisterSuccess('Usuario registrado exitosamente. Ahora puedes iniciar sesión.');
+                        setRegisterName('');
+                        setRegisterEmail('');
+                        setRegisterPassword('');
+                        setTimeout(() => {
+                            setShowRegister(false);
+                            setRegisterSuccess('');
+                        }, 2000);
+                    } else {
+                        setRegisterError(data.error || 'Error al registrar usuario');
+                    }
+                } catch (error) {
+                    setRegisterError('Error de conexión. Intenta nuevamente.');
+                }
+            };
+
+            return (
+                <header className="w-full bg-white shadow-sm fixed top-0 left-0 z-50">
+                    <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+                        <h1 className="text-2xl font-bold text-gray-900">Hero Threads</h1>
+                        <nav className="hidden md:flex space-x-6">
+                            <button onClick={() => onNavigate('home')} className="text-gray-600 hover:text-gray-900 transition-colors">Inicio</button>
+                            {/* Show 'Camisetas' for non-admin, 'Dashboard' and 'Reportes' for admin */}
+                            {user && user.role === 'admin' ? (
+                                <>
+                                    <button onClick={() => onNavigate('dashboard')} className="text-gray-600 hover:text-gray-900 transition-colors">Dashboard</button>
+                                    <button onClick={() => onNavigate('reports')} className="text-gray-600 hover:text-gray-900 transition-colors">Reportes</button>
+                                </>
+                            ) : (
+                                <button onClick={() => onNavigate('products')} className="text-gray-600 hover:text-gray-900 transition-colors">Camisetas</button>
+                            )}
+                            {/* Hide 'Nosotros' for admin */}
+                            {(!user || user.role !== 'admin') && (
+                                <button onClick={() => onNavigate('about')} className="text-gray-600 hover:text-gray-900 transition-colors">Nosotros</button>
+                            )}
+                            {user && user.role === 'admin' && (
+                                <button onClick={() => onNavigate('admin')} className="text-gray-600 hover:text-gray-900 transition-colors">Admin</button>
+                            )}
+                        </nav>
+                        <div className="flex items-center space-x-4">
+                            {!user ? (
+                                <div className="flex items-center gap-2">
+                                    <button
+                                        onClick={() => setShowLogin(true)}
+                                        className="px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition"
+                                    >
+                                        Iniciar Sesión
+                                    </button>
+                                    <button
+                                        onClick={() => setShowRegister(true)}
+                                        className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg font-semibold hover:bg-gray-300 transition"
+                                    >
+                                        Registrarse
+                                    </button>
+                                </div>
+                            ) : (
+                                <>
+                                    <span className="text-gray-700 font-medium">{user.email} ({user.role === 'admin' ? 'Administrador' : 'Cliente'})</span>
+                                    <button
+                                        onClick={onLogout}
+                                        className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg font-semibold hover:bg-gray-300 transition"
+                                    >
+                                        Cerrar Sesión
+                                    </button>
+                                </>
+                            )}
+                            {/* Hide cart for admin */}
+                            {(!user || user.role !== 'admin') && (
+                                <button onClick={() => onNavigate('cart')} className="relative p-2 rounded-full hover:bg-gray-100 transition-colors">
+                                    <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 0a2 2 0 100 4 2 2 0 000-4z"></path>
+                                    </svg>
+                                    <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">{cartCount}</span>
+                                </button>
+                            )}
+                            <button className="md:hidden p-2 rounded-full hover:bg-gray-100 transition-colors">
+                                <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    {/* Login Modal */}
+                    {showLogin && (
+                        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+                            <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-sm relative">
+                                <button onClick={() => setShowLogin(false)} className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 text-2xl">&times;</button>
+                                <h2 className="text-2xl font-bold mb-6 text-center">Iniciar Sesión</h2>
+                                <form className="space-y-4" onSubmit={handleLoginSubmit}>
+                                    <input type="email" placeholder="Correo electrónico" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 transition" value={loginEmail} onChange={e => setLoginEmail(e.target.value)} required />
+                                    <input type="password" placeholder="Contraseña" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 transition" value={loginPassword} onChange={e => setLoginPassword(e.target.value)} required />
+                                    {loginError && <div className="text-red-600 text-sm text-center">{loginError}</div>}
+                                    <button type="submit" className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 font-semibold transition">Entrar</button>
+                                    <div className="text-xs text-gray-500 mt-2 text-center">
+                                        <div><b>Admin:</b> admin@admin.com / admin123</div>
+                                        <div><b>Cliente:</b> cliente@cliente.com / cliente123</div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    )}
+                    {/* Register Modal */}
+                    {showRegister && (
+                        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+                            <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-sm relative">
+                                <button onClick={() => setShowRegister(false)} className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 text-2xl">&times;</button>
+                                <h2 className="text-2xl font-bold mb-6 text-center">Registrarse</h2>
+                                <form className="space-y-4" onSubmit={handleRegisterSubmit}>
+                                    <input
+                                        type="text"
+                                        placeholder="Nombre completo"
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 transition"
+                                        value={registerName}
+                                        onChange={e => setRegisterName(e.target.value)}
+                                        required
+                                    />
+                                    <input
+                                        type="email"
+                                        placeholder="Correo electrónico"
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 transition"
+                                        value={registerEmail}
+                                        onChange={e => setRegisterEmail(e.target.value)}
+                                        required
+                                    />
+                                    <input
+                                        type="password"
+                                        placeholder="Contraseña"
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 transition"
+                                        value={registerPassword}
+                                        onChange={e => setRegisterPassword(e.target.value)}
+                                        required
+                                    />
+                                    {registerError && <div className="text-red-600 text-sm text-center">{registerError}</div>}
+                                    {registerSuccess && <div className="text-green-600 text-sm text-center">{registerSuccess}</div>}
+                                    <button type="submit" className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 font-semibold transition">Crear cuenta</button>
+                                </form>
+                            </div>
+                        </div>
+                    )}
+                </header>
+            );
+        }
+
+        // /mock/products.js
+        const defaultProducts = [
+            {
+                id: 1,
+                name: "Camiseta Spider-Man Clásico",
+                description: "Diseño icónico del trepamuros, perfecto para cualquier fan.",
+                price: 17.00,
+                image: "https://4tsix0yujj.ufs.sh/f/2vMRHqOYUHc08gWYphn7xHOTFQ3jrBEd0VGzfS9yKokWuAem",
+                gallery: [
+                    "https://4tsix0yujj.ufs.sh/f/2vMRHqOYUHc08gWYphn7xHOTFQ3jrBEd0VGzfS9yKokWuAem",
+                    "https://4tsix0yujj.ufs.sh/f/2vMRHqOYUHc0UROsBF4lpN4OwGAX7ky90Ihqt2Z5MKWHdTfQ",
+                    "https://4tsix0yujj.ufs.sh/f/2vMRHqOYUHc0mhvw4ifIJbfOXQWPgDwNtHSspUETxakjAG2u",
+                    "https://4tsix0yujj.ufs.sh/f/2vMRHqOYUHc0VUdr6fJrFC0J7K5LhXEI2tlBemYwSTjsNOpD"
+                ]
+            },
+            {
+                id: 2,
+                name: "Camiseta Capitán América",
+                description: "El escudo y los colores del Capitán, símbolo de justicia.",
+                price: 17.00,
+                image: "https://4tsix0yujj.ufs.sh/f/2vMRHqOYUHc04VuB3E007fmwyReAgKCraUIWzEDZ6on58JNO",
+                gallery: [
+                    "https://4tsix0yujj.ufs.sh/f/2vMRHqOYUHc04VuB3E007fmwyReAgKCraUIWzEDZ6on58JNO",
+                    "https://4tsix0yujj.ufs.sh/f/2vMRHqOYUHc0UROsBF4lpN4OwGAX7ky90Ihqt2Z5MKWHdTfQ",
+                    "https://4tsix0yujj.ufs.sh/f/2vMRHqOYUHc0mhvw4ifIJbfOXQWPgDwNtHSspUETxakjAG2u",
+                    "https://4tsix0yujj.ufs.sh/f/2vMRHqOYUHc0VUdr6fJrFC0J7K5LhXEI2tlBemYwSTjsNOpD"
+                ]
+            },
+            {
+                id: 3,
+                name: "Camiseta Iron Man Mark 85",
+                description: "Armadura de Iron Man, para los amantes de la tecnología.",
+                price: 17.00,
+                image: "https://4tsix0yujj.ufs.sh/f/2vMRHqOYUHc04gqYUxk007fmwyReAgKCraUIWzEDZ6on58JN",
+                gallery: [
+                    "https://4tsix0yujj.ufs.sh/f/2vMRHqOYUHc04gqYUxk007fmwyReAgKCraUIWzEDZ6on58JN",
+                    "https://4tsix0yujj.ufs.sh/f/2vMRHqOYUHc0UROsBF4lpN4OwGAX7ky90Ihqt2Z5MKWHdTfQ",
+                    "https://4tsix0yujj.ufs.sh/f/2vMRHqOYUHc0mhvw4ifIJbfOXQWPgDwNtHSspUETxakjAG2u",
+                    "https://4tsix0yujj.ufs.sh/f/2vMRHqOYUHc0VUdr6fJrFC0J7K5LhXEI2tlBemYwSTjsNOpD"
+                ]
+            },
+            {
+                id: 4,
+                name: "Camiseta Black Panther",
+                description: "El rey de Wakanda, diseño elegante y poderoso.",
+                price: 17.00,
+                image: "https://4tsix0yujj.ufs.sh/f/2vMRHqOYUHc0zTDyG5eYLtCPgmTbn59N6BRyWUl87afK30Dw",
+                gallery: [
+                    "https://4tsix0yujj.ufs.sh/f/2vMRHqOYUHc0zTDyG5eYLtCPgmTbn59N6BRyWUl87afK30Dw",
+                    "https://4tsix0yujj.ufs.sh/f/2vMRHqOYUHc0UROsBF4lpN4OwGAX7ky90Ihqt2Z5MKWHdTfQ",
+                    "https://4tsix0yujj.ufs.sh/f/2vMRHqOYUHc0mhvw4ifIJbfOXQWPgDwNtHSspUETxakjAG2u",
+                    "https://4tsix0yujj.ufs.sh/f/2vMRHqOYUHc0VUdr6fJrFC0J7K5LhXEI2tlBemYwSTjsNOpD"
+                ]
+            },
+            {
+                id: 5,
+                name: "Camiseta Hulk Smash",
+                description: "El gigante verde en acción, ¡fuerza bruta en tu pecho!",
+                price: 17.00,
+                image: "https://4tsix0yujj.ufs.sh/f/2vMRHqOYUHc04g3nsEz007fmwyReAgKCraUIWzEDZ6on58JN",
+                gallery: [
+                    "https://4tsix0yujj.ufs.sh/f/2vMRHqOYUHc04g3nsEz007fmwyReAgKCraUIWzEDZ6on58JN",
+                    "https://4tsix0yujj.ufs.sh/f/2vMRHqOYUHc0UROsBF4lpN4OwGAX7ky90Ihqt2Z5MKWHdTfQ",
+                    "https://4tsix0yujj.ufs.sh/f/2vMRHqOYUHc0mhvw4ifIJbfOXQWPgDwNtHSspUETxakjAG2u",
+                    "https://4tsix0yujj.ufs.sh/f/2vMRHqOYUHc0VUdr6fJrFC0J7K5LhXEI2tlBemYwSTjsNOpD"
+                ]
+            },
+            {
+                id: 6,
+                name: "Camiseta Thor Stormbreaker",
+                description: "El dios del trueno con su arma, digno de Asgard.",
+                price: 17.00,
+                image: "https://4tsix0yujj.ufs.sh/f/2vMRHqOYUHc0pCZ4Gn89LiV6g1FsuhvBa0wlA7EzOrDJYMmS",
+                gallery: [
+                    "https://4tsix0yujj.ufs.sh/f/2vMRHqOYUHc0pCZ4Gn89LiV6g1FsuhvBa0wlA7EzOrDJYMmS",
+                    "https://4tsix0yujj.ufs.sh/f/2vMRHqOYUHc0UROsBF4lpN4OwGAX7ky90Ihqt2Z5MKWHdTfQ",
+                    "https://4tsix0yujj.ufs.sh/f/2vMRHqOYUHc0mhvw4ifIJbfOXQWPgDwNtHSspUETxakjAG2u",
+                    "https://4tsix0yujj.ufs.sh/f/2vMRHqOYUHc0VUdr6fJrFC0J7K5LhXEI2tlBemYwSTjsNOpD"
+                ]
+            },
+        ];
+
+        // /App.js
+        function App() {
+            const [currentPage, setCurrentPage] = useState('home');
+            const [cartItems, setCartItems] = useState([]);
+            const [products, setProducts] = useState([]);
+            const [searchTerm, setSearchTerm] = useState('');
+            const [filteredProducts, setFilteredProducts] = useState([]);
+            const [paymentMethod, setPaymentMethod] = useState('card'); // 'card' o 'transfer'
+            // --- AUTH STATE ---
+            const [user, setUser] = useState(null); // { role: 'admin' | 'client', email: string }
+            const [loginError, setLoginError] = useState('');
+            const [loading, setLoading] = useState(false);
+
+            // API Base URL
+            const API_BASE_URL = 'http://127.0.0.1:3000/api';
+
+            // New: calculate cart count
+            const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+
+            // API Functions
+            const fetchProducts = async () => {
+                try {
+                    setLoading(true);
+                    const response = await fetch(`${API_BASE_URL}/productos`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        setProducts(data);
+                        setFilteredProducts(data);
+                    } else {
+                        console.error('Error fetching products');
+                        // Fallback to default products if API fails
+                        setProducts(defaultProducts);
+                        setFilteredProducts(defaultProducts);
+                    }
+                } catch (error) {
+                    console.error('Error fetching products:', error);
+                    // Fallback to default products if API fails
+                    setProducts(defaultProducts);
+                    setFilteredProducts(defaultProducts);
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const createProduct = async (productData) => {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/productos`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(productData),
+                    });
+                    if (response.ok) {
+                        const newProduct = await response.json();
+                        setProducts(prev => [...prev, newProduct]);
+                        return newProduct;
+                    } else {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || 'Error creating product');
+                    }
+                } catch (error) {
+                    console.error('Error creating product:', error);
+                    throw error;
+                }
+            };
+
+            const updateProduct = async (id, productData) => {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/productos/${id}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(productData),
+                    });
+                    if (response.ok) {
+                        const updatedProduct = await response.json();
+                        setProducts(prev => prev.map(p => p._id === id ? updatedProduct : p));
+                        return updatedProduct;
+                    } else {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || 'Error updating product');
+                    }
+                } catch (error) {
+                    console.error('Error updating product:', error);
+                    throw error;
+                }
+            };
+
+            const deleteProduct = async (id) => {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/productos/${id}`, {
+                        method: 'DELETE',
+                    });
+                    if (response.ok) {
+                        setProducts(prev => prev.filter(p => p._id !== id));
+                        return true;
+                    } else {
+                        throw new Error('Error deleting product');
+                    }
+                } catch (error) {
+                    console.error('Error deleting product:', error);
+                    throw error;
+                }
+            };
+
+            // Load products on component mount
+            useEffect(() => {
+                fetchProducts();
+            }, []);
+
+            useEffect(() => {
+                const lowercasedSearchTerm = searchTerm.toLowerCase();
+                const currentFilteredProducts = products.filter(product =>
+                    product.name.toLowerCase().includes(lowercasedSearchTerm)
+                );
+                setFilteredProducts(currentFilteredProducts);
+            }, [searchTerm, products]);
+
+            const handleNavigate = (page) => {
+                setCurrentPage(page);
+            };
+
+            const handleSearchChange = (term) => {
+                setSearchTerm(term);
+            };
+
+            const handleAddToCart = (product) => {
+                setCartItems((prevItems) => {
+                    const productId = product._id || product.id;
+                    const existingItem = prevItems.find((item) => (item._id || item.id) === productId);
+                    if (existingItem) {
+                        return prevItems.map((item) =>
+                            (item._id || item.id) === productId ? { ...item, quantity: item.quantity + 1 } : item
+                        );
+                    }
+                    return [...prevItems, { ...product, quantity: 1 }];
+                });
+                alert(`${product.name} agregado al carrito!`);
+            };
+
+            // New: Remove item from cart
+            const handleRemoveFromCart = (id) => {
+                setCartItems((prevItems) => prevItems.filter((item) => (item._id || item.id) !== id));
+            };
+
+            // New: Update quantity in cart
+            const handleUpdateCartQuantity = (id, newQuantity) => {
+                setCartItems((prevItems) =>
+                    prevItems
+                        .map((item) =>
+                            (item._id || item.id) === id ? { ...item, quantity: newQuantity } : item
+                        )
+                        .filter((item) => item.quantity > 0)
+                );
+            };
+
+            // New: Clear cart
+            const handleClearCart = () => {
+                setCartItems([]);
+            };
+
+            const handleUpdateProduct = async (id, updatedFields) => {
+                try {
+                    await updateProduct(id, updatedFields);
+                } catch (error) {
+                    alert(error.message || 'Error al actualizar el producto. Intenta de nuevo.');
+                }
+            };
+
+            const handleAddProduct = async (newProduct) => {
+                try {
+                    await createProduct(newProduct);
+                    alert('Producto agregado exitosamente!');
+                } catch (error) {
+                    alert(error.message || 'Error al agregar el producto. Intenta de nuevo.');
+                }
+            };
+
+            const handleDeleteProduct = async (id) => {
+                try {
+                    await deleteProduct(id);
+                    alert('Producto eliminado exitosamente!');
+                } catch (error) {
+                    alert('Error al eliminar el producto. Intenta de nuevo.');
+                }
+            };
+
+            const handleCheckout = () => {
+                if (cartItems.length === 0) {
+                    alert('Tu carrito está vacío. Agrega productos antes de proceder al pago.');
+                    return;
+                }
+                setCurrentPage('checkout');
+            };
+
+            const handleProcessPayment = () => {
+                alert(`Procesando pago con ${paymentMethod === 'card' ? 'Tarjeta de Crédito' : 'Transferencia Bancaria'}. ¡Gracias por tu compra!`);
+                setCartItems([]); // Vaciar carrito después de la compra
+                setCurrentPage('home'); // Redirigir a la página principal
+            };
+
+            // --- AUTH LOGIC ---
+            const handleLogin = async (email, password) => {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/login`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ email, password }),
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        setUser(data.user);
+                        setCurrentPage('home');
+                        setLoginError('');
+                    } else {
+                        setLoginError(data.message || 'Credenciales incorrectas.');
+                    }
+                } catch (error) {
+                    console.error('Error during login:', error);
+                    setLoginError('Error de conexión. Intenta de nuevo.');
+                }
+            };
+            const handleLogout = () => {
+                setUser(null);
+                setCurrentPage('home');
+            };
+
+            return (
+                <div className="min-h-screen bg-gray-50 font-sans antialiased">
+                    <ShopHeader
+                        onNavigate={handleNavigate}
+                        onSearchChange={handleSearchChange}
+                        cartCount={cartCount}
+                        currentPage={currentPage}
+                        user={user}
+                        onLogout={handleLogout}
+                        onLogin={handleLogin}
+                        loginError={loginError}
+                    />
+                    <main className="pt-16"> {/* Padding top para compensar el header fijo */}
+                        {currentPage === 'home' && (
+                            <ShopHeroSection onExploreClick={() => handleNavigate('products')} />
+                        )}
+                        {currentPage === 'products' && (
+                            loading ? (
+                                <div className="container mx-auto px-4 py-12 text-center">
+                                    <div className="text-2xl text-gray-600">Cargando productos...</div>
+                                </div>
+                            ) : (
+                                <ShopProductGrid products={filteredProducts} onAddToCart={handleAddToCart} />
+                            )
+                        )}
+                        {currentPage === 'about' && (
+                            <AboutSection onExploreClick={() => handleNavigate('products')} />
+                        )}
+                        {currentPage === 'cart' && (!user || user.role !== 'admin') && (
+                            <section className="container mx-auto px-4 py-12">
+                                <h2 className="text-4xl font-bold text-center text-gray-900 mb-10">Tu Carrito</h2>
+                                {cartItems.length === 0 ? (
+                                    <p className="text-center text-gray-600 text-xl">
+                                        Tu carrito está vacío, ¡Es hora de llenarlo de{' '}
+                                        <span
+                                            className="text-blue-600 font-semibold underline cursor-pointer hover:text-blue-800"
+                                            onClick={() => handleNavigate('products')}
+                                        >
+                                            héroes
+                                        </span>!
+                                    </p>
+                                ) : (
+                                    <div className="bg-white rounded-xl shadow-lg p-8 max-w-3xl mx-auto">
+                                        {cartItems.map((item) => (
+                                            <div key={item._id || item.id} className="flex items-center justify-between py-4 border-b border-gray-200 last:border-b-0">
+                                                <div className="flex items-center space-x-4">
+                                                    <img src={item.image} alt={item.name} className="w-20 h-20 object-cover rounded-lg" />
+                                                    <div>
+                                                        <h3 className="text-lg font-semibold text-gray-900">{item.name}</h3>
+                                                        <div className="flex items-center space-x-2 mt-2">
+                                                            <button
+                                                                onClick={() => handleUpdateCartQuantity(item._id || item.id, item.quantity - 1)}
+                                                                className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 font-bold"
+                                                                disabled={item.quantity <= 1}
+                                                            >-</button>
+                                                            <span className="px-2">{item.quantity}</span>
+                                                            <button
+                                                                onClick={() => handleUpdateCartQuantity(item._id || item.id, item.quantity + 1)}
+                                                                className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 font-bold"
+                                                            >+</button>
+                                                            <button
+                                                                onClick={() => handleRemoveFromCart(item._id || item.id)}
+                                                                className="ml-4 px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-xs"
+                                                            >Eliminar</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <span className="text-xl font-bold text-gray-900">${(item.price * item.quantity).toFixed(2)}</span>
+                                            </div>
+                                        ))}
+                                        <div className="flex justify-between items-center pt-6 mt-6 border-t border-gray-200">
+                                            <span className="text-2xl font-bold text-gray-900">Total:</span>
+                                            <span className="text-2xl font-bold text-red-600">
+                                                ${cartItems.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2)}
+                                            </span>
+                                        </div>
+                                        <div className="flex flex-col md:flex-row md:justify-between gap-4 mt-8">
+                                            <button
+                                                onClick={handleClearCart}
+                                                className="w-full md:w-auto bg-gray-200 text-gray-800 py-3 rounded-lg hover:bg-gray-300 transition-colors font-semibold"
+                                            >
+                                                Vaciar Carrito
+                                            </button>
+                                            <button
+                                                onClick={handleCheckout}
+                                                className="w-full md:w-auto bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+                                            >
+                                                Realizar el Pago
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+                            </section>
+                        )}
+                        {currentPage === 'checkout' && (
+                            <section className="container mx-auto px-4 py-12">
+                                <h2 className="text-4xl font-bold text-center text-gray-900 mb-10">Método de Pago</h2>
+                                <div className="bg-white rounded-xl shadow-lg p-8 max-w-md mx-auto">
+                                    <div className="mb-6">
+                                        <label className="block text-gray-700 text-sm font-bold mb-2">
+                                            Selecciona tu método de pago:
+                                        </label>
+                                        <div className="flex space-x-4">
+                                            <button
+                                                onClick={() => setPaymentMethod('card')}
+                                                className={`flex-1 py-3 rounded-lg font-semibold transition-colors ${paymentMethod === 'card' ? 'bg-black text-white' : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
+                                                    }`}
+                                            >
+                                                Tarjeta de Crédito
+                                            </button>
+                                            <button
+                                                onClick={() => setPaymentMethod('transfer')}
+                                                className={`flex-1 py-3 rounded-lg font-semibold transition-colors ${paymentMethod === 'transfer' ? 'bg-black text-white' : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
+                                                    }`}
+                                            >
+                                                Transferencia Bancaria
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {paymentMethod === 'card' && (
+                                        <div>
+                                            <h3 className="text-xl font-bold text-gray-900 mb-4">Información de la Tarjeta de Crédito</h3>
+                                            <input
+                                                type="text"
+                                                placeholder="Número de Tarjeta"
+                                                className="w-full px-4 py-3 mb-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black transition"
+                                            />
+                                            <input
+                                                type="text"
+                                                placeholder="Nombre en la Tarjeta"
+                                                className="w-full px-4 py-3 mb-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black transition"
+                                            />
+                                            <div className="flex space-x-4 mb-6">
+                                                <input
+                                                    type="text"
+                                                    placeholder="MM/AA"
+                                                    className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black transition"
+                                                />
+                                                <input
+                                                    type="text"
+                                                    placeholder="CVV"
+                                                    className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black transition"
+                                                />
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {paymentMethod === 'transfer' && (
+                                        <div>
+                                            <h3 className="text-xl font-bold text-gray-900 mb-4">Detalles para Transferencia Bancaria</h3>
+                                            <p className="text-gray-700 mb-2">Por favor, realiza la transferencia a los siguientes datos:</p>
+                                            <p className="text-gray-900 font-semibold">Banco: Banco Héroe</p>
+                                            <p className="text-gray-900 font-semibold">Número de Cuenta: 1234567890</p>
+                                            <p className="text-gray-900 font-semibold mb-4">CLAVE Interbancaria: 012345678901234567</p>
+                                            <p className="text-gray-700 text-sm">Una vez realizada la transferencia, por favor envía el comprobante a <span className="font-semibold">pagos@sigmathreads.com</span> para confirmar tu pedido.</p>
+                                        </div>
+                                    )}
+
+                                    <button
+                                        onClick={handleProcessPayment}
+                                        className="w-full mt-8 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+                                    >
+                                        Confirmar Pago
+                                    </button>
+                                </div>
+                            </section>
+                        )}
+                        {currentPage === 'dashboard' && user && user.role === 'admin' && (
+                            <ProductosDashboard />
+                        )}
+                        {currentPage === 'reports' && user && user.role === 'admin' && (
+                            <ReportsSection />
+                        )}
+                        {currentPage === 'admin' && (
+                            user && user.role === 'admin' ? (
+                                <AdminProductManager
+                                    products={products}
+                                    onUpdateProduct={handleUpdateProduct}
+                                    onAddProduct={handleAddProduct}
+                                    onDeleteProduct={handleDeleteProduct}
+                                />
+                            ) : (
+                                <section className="container mx-auto px-4 py-12">
+                                    <div className="bg-white rounded-xl shadow-lg p-8 max-w-md mx-auto text-center">
+                                        <h2 className="text-2xl font-bold text-gray-900 mb-4">Acceso restringido</h2>
+                                        <p className="text-gray-700">Solo los administradores pueden acceder a esta sección.</p>
+                                    </div>
+                                </section>
+                            )
+                        )}
+                    </main>
+                </div>
+            );
+        }
+
+        function AboutSection({ onExploreClick }) {
+            return (
+                <section className="w-full bg-gradient-to-br from-gray-50 to-gray-200 py-16">
+                    <div className="container mx-auto px-4">
+                        <div className="bg-white rounded-2xl shadow-xl p-8 md:p-16 flex flex-col md:flex-row gap-12 items-center md:items-start">
+                            {/* About Us Text */}
+                            <div className="flex-1 text-center md:text-left">
+                                <h2 className="text-4xl font-extrabold text-gray-900 mb-6">Sobre Nosotros</h2>
+                                <div className="space-y-5 text-gray-700 text-lg leading-relaxed">
+                                    <p>
+                                        En <a href="#" onClick={onExploreClick} className="font-semibold underline hover:text-gray-900 transition-colors cursor-pointer">Hero Threads</a>, compartimos tu pasión por los superhéroes. Nos inspiran sus historias, su fuerza y su valentía, y lo reflejamos en cada una de nuestras camisetas sublimadas de alta calidad, diseñadas para brindarte estilo, comodidad y personalidad.
+                                    </p>
+                                    <p>
+                                        Cada prenda es más que una camiseta: es una forma de llevar contigo a tus personajes favoritos, de mostrar lo que representas y de sentirte parte de algo más grande.
+                                    </p>
+                                    <p>
+                                        Aquí, los fans no solo visten a sus héroes... <span className="font-semibold text-red-600">se convierten en ellos</span>.
+                                    </p>
+                                    <p>
+                                        Únete a <a href="#" onClick={onExploreClick} className="font-semibold underline hover:text-gray-900 transition-colors cursor-pointer">Hero Threads</a> y forma parte de una comunidad donde la pasión por los superhéroes se vive con orgullo.
+                                        <br />
+                                        <span className="block mt-4 font-bold text-gray-800">¡Porque todos llevamos un héroe dentro!</span>
+                                    </p>
+                                </div>
+                                <div className="mt-8 flex flex-col items-center md:items-start gap-4">
+                                    <button
+                                        onClick={onExploreClick}
+                                        className="px-8 py-4 bg-blue-600 text-white text-lg font-semibold rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300 transform hover:scale-105"
+                                    >
+                                        Explorar Colección
+                                    </button>
+                                    <div className="flex items-center gap-4 mt-2">
+                                        <span className="text-gray-600 font-medium">Síguenos:</span>
+                                        <a href="#" aria-label="Instagram" className="text-pink-500 hover:text-pink-700 text-2xl"><svg fill="currentColor" viewBox="0 0 24 24" className="w-6 h-6"><path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5A4.25 4.25 0 0 0 16.25 3.5zm4.25 2.25a5.25 5.25 0 1 1-5.25 5.25 5.25 5.25 0 0 1 5.25-5.25zm0 1.5a3.75 3.75 0 1 0 3.75 3.75A3.75 3.75 0 0 0 12 5.25zm6.25 1.25a1 1 0 1 1-1 1 1 1 0 0 1 1-1z" /></svg></a>
+                                        <a href="#" aria-label="Facebook" className="text-blue-700 hover:text-blue-900 text-2xl"><svg fill="currentColor" viewBox="0 0 24 24" className="w-6 h-6"><path d="M22.675 0h-21.35C.595 0 0 .592 0 1.326v21.348C0 23.408.595 24 1.325 24h11.495v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.797.143v3.24l-1.918.001c-1.504 0-1.797.715-1.797 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116C23.406 24 24 23.408 24 22.674V1.326C24 .592 23.406 0 22.675 0" /></svg></a>
+                                        <a href="#" aria-label="Twitter" className="text-blue-400 hover:text-blue-600 text-2xl"><svg fill="currentColor" viewBox="0 0 24 24" className="w-6 h-6"><path d="M24 4.557a9.83 9.83 0 0 1-2.828.775 4.932 4.932 0 0 0 2.165-2.724c-.951.564-2.005.974-3.127 1.195a4.916 4.916 0 0 0-8.38 4.482C7.691 8.095 4.066 6.13 1.64 3.161c-.542.929-.856 2.01-.857 3.17 0 2.188 1.115 4.117 2.823 5.247a4.904 4.904 0 0 1-2.229-.616c-.054 2.281 1.581 4.415 3.949 4.89a4.936 4.936 0 0 1-2.224.084c.627 1.956 2.444 3.377 4.6 3.417A9.867 9.867 0 0 1 0 21.543a13.94 13.94 0 0 0 7.548 2.209c9.058 0 14.009-7.513 14.009-14.009 0-.213-.005-.425-.014-.636A10.012 10.012 0 0 0 24 4.557z" /></svg></a>
+                                    </div>
+                                </div>
+                            </div>
+                            {/* Contact Form */}
+                            <div className="flex-1 w-full max-w-md mx-auto">
+                                <div className="bg-gray-50 rounded-xl shadow p-6 md:p-8">
+                                    <h3 className="text-2xl font-bold text-gray-900 mb-4 text-center md:text-left">Contáctanos</h3>
+                                    <p className="text-gray-700 mb-4 text-center md:text-left">¿Tienes alguna duda o sugerencia? ¡Nos encantaría escucharte!</p>
+                                    <form className="space-y-4">
+                                        <input
+                                            type="text"
+                                            placeholder="Tu Nombre"
+                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black transition"
+                                        />
+                                        <input
+                                            type="email"
+                                            placeholder="Tu Correo Electrónico"
+                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black transition"
+                                        />
+                                        <textarea
+                                            placeholder="Tu Mensaje"
+                                            rows="5"
+                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black transition resize-none"
+                                        ></textarea>
+                                        <button
+                                            type="submit"
+                                            className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+                                        >
+                                            Enviar Mensaje
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            );
+        }
+
+
+        // DONE
+
+        const root = createRoot(document.getElementById("root"));
+        root.render(
+            <StrictMode>
+                <App />
+            </StrictMode>
+        );
+    </script>
+</body>
+
+</html>
