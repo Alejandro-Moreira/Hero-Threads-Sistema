@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import apiService from '../services/apiService';
 
-const RegisterModal = ({ isOpen, onClose, onRegister }) => {
+const RegisterModal = ({ isOpen, onClose }) => {
   const [formData, setFormData] = useState({
     nombre: '',
     email: '',
@@ -19,7 +20,6 @@ const RegisterModal = ({ isOpen, onClose, onRegister }) => {
       ...prev,
       [name]: value
     }));
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
@@ -30,30 +30,13 @@ const RegisterModal = ({ isOpen, onClose, onRegister }) => {
 
   const validateForm = () => {
     const newErrors = {};
-
-    if (!formData.nombre.trim()) {
-      newErrors.nombre = 'El nombre es requerido';
-    }
-
-    if (!formData.email.trim()) {
-      newErrors.email = 'El email es requerido';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'El email no es válido';
-    }
-
-    if (!formData.password) {
-      newErrors.password = 'La contraseña es requerida';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'La contraseña debe tener al menos 6 caracteres';
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Las contraseñas no coinciden';
-    }
-
-    if (formData.celular && !/^\d+$/.test(formData.celular)) {
-      newErrors.celular = 'El celular debe contener solo números';
-    }
+    if (!formData.nombre.trim()) newErrors.nombre = 'El nombre es requerido';
+    if (!formData.email.trim()) newErrors.email = 'El email es requerido';
+    else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'El email no es válido';
+    if (!formData.password) newErrors.password = 'La contraseña es requerida';
+    else if (formData.password.length < 6) newErrors.password = 'La contraseña debe tener al menos 6 caracteres';
+    if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = 'Las contraseñas no coinciden';
+    if (formData.celular && !/^\d+$/.test(formData.celular)) newErrors.celular = 'El celular debe contener solo números';
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -61,23 +44,40 @@ const RegisterModal = ({ isOpen, onClose, onRegister }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (!validateForm()) {
-      return;
-    }
-
+  
+    if (!validateForm()) return;
+  
     setIsSubmitting(true);
     try {
-      await onRegister(formData);
-      onClose();
+      // Registrar usuario
+      const registerResult = await apiService.register(formData);
+  
+      if (registerResult.success) {
+        // Enviar email de confirmación
+        const emailResult = await apiService.sendConfirmationEmail(
+          formData.email,
+          formData.nombre,
+          'registration'
+        );
+  
+        if (emailResult.success) {
+          alert('Registro exitoso. Revisa tu correo para confirmar tu cuenta.');
+          onClose();
+        } else {
+          alert('Registro exitoso, pero no se pudo enviar el email de confirmación.');
+        }
+      } else {
+        alert(`Error en el registro: ${registerResult.message || 'Error desconocido'}`);
+      }
     } catch (error) {
-      console.error('Registration error:', error);
+      console.error('Error durante el registro:', error);
+      alert(error.message || 'Error inesperado durante el registro. Intenta de nuevo.');
     } finally {
       setIsSubmitting(false);
     }
   };
-
-  if (!isOpen) return null;
+  
+  if (!isOpen) return null;  
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -93,6 +93,7 @@ const RegisterModal = ({ isOpen, onClose, onRegister }) => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Todos los inputs iguales que antes */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Nombre completo *
@@ -240,4 +241,4 @@ const RegisterModal = ({ isOpen, onClose, onRegister }) => {
   );
 };
 
-export default RegisterModal; 
+export default RegisterModal;

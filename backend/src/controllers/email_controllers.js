@@ -9,16 +9,15 @@ const generateVerificationToken = () => {
 
 // Create email transporter
 const createTransporter = () => {
-  // For development, use a test account or fallback to logging
   const emailUser = process.env.EMAIL_USER;
   const emailPass = process.env.EMAIL_PASS;
-  
+
   if (!emailUser || !emailPass) {
     console.log('Email credentials not configured. Using fallback mode.');
     return null;
   }
-  
-  return nodemailer.createTransporter({
+
+  return nodemailer.createTransport({
     service: 'gmail',
     auth: {
       user: emailUser,
@@ -26,6 +25,7 @@ const createTransporter = () => {
     }
   });
 };
+
 
 // Send confirmation email
 const sendConfirmationEmail = async (req, res) => {

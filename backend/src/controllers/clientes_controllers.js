@@ -71,13 +71,13 @@ const generateVerificationToken = () => {
 const createTransporter = () => {
   const emailUser = process.env.EMAIL_USER;
   const emailPass = process.env.EMAIL_PASS;
-  
+
   if (!emailUser || !emailPass) {
     console.log('Email credentials not configured. Using fallback mode.');
     return null;
   }
-  
-  return nodemailer.createTransporter({
+
+  return nodemailer.createTransport({  // <- aquí debe ser createTransport
     service: 'gmail',
     auth: {
       user: emailUser,
@@ -117,15 +117,15 @@ const sendVerificationEmail = async (email, name, verificationToken) => {
       };
 
       await transporter.sendMail(mailOptions);
-      console.log('✅ Verification email sent successfully to:', email);
+      console.log('Verification email sent successfully to:', email);
       return true;
     } catch (emailError) {
-      console.error('❌ Error sending email:', emailError);
-      console.log('📧 Verification link (fallback):', verificationLink);
+      console.error('Error sending email:', emailError);
+      console.log('Verification link (fallback):', verificationLink);
       return false;
     }
   } else {
-    console.log('📧 Email not configured. Verification link:', verificationLink);
+    console.log('Email not configured. Verification link:', verificationLink);
     return false;
   }
 };
@@ -134,7 +134,7 @@ const registrarClientePublico = async (req, res) => {
     const { nombre, email, password } = req.body;
     
     try {
-        console.log('🔄 Registration attempt for:', email);
+        console.log('Registration attempt for:', email);
         
         // Validate required fields
         if (!nombre || !email || !password) {
@@ -186,9 +186,9 @@ const registrarClientePublico = async (req, res) => {
             _id: new mongoose.Types.ObjectId(),
             nombre: nombre.trim(),
             email: email.toLowerCase().trim(),
-            password: hashedPassword,
-            role: 'client', // Default role for public registration
-            emailVerified: false, // New users need to verify their email
+            password: await bcrypt.hash(password, 10),
+            role: 'client', 
+            emailVerified: false, 
             emailVerificationToken: verificationToken,
             emailVerificationExpires: verificationExpires,
             status: 'active',
@@ -196,7 +196,7 @@ const registrarClientePublico = async (req, res) => {
         });
 
         await nuevoCliente.save();
-        console.log('✅ User saved to database:', nuevoCliente._id);
+        console.log('User saved to database:', nuevoCliente._id);
         
         // Send verification email
         const emailSent = await sendVerificationEmail(email, nombre, verificationToken);
@@ -212,10 +212,15 @@ const registrarClientePublico = async (req, res) => {
             emailSent: emailSent
         });
         
-    } catch (err) {
-        console.error('❌ Registration error:', err);
+      } catch (err) {
+        if (err.code === 11000 && err.keyPattern && err.keyPattern.email) {
+            // Error de duplicado de email
+            return res.status(400).json({ error: 'Ya existe un usuario con ese email' });
+        }
+    
+        console.error('Registration error:', err);
         res.status(500).json({ error: 'Error al registrar el usuario' });
-    }
+    }    
 }
 
 const actualizarCliente = async (req, res) => {
