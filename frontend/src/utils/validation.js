@@ -1,6 +1,3 @@
-// Validation utility functions for Hero Threads
-
-// Email validation
 export const validateEmail = (email) => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
@@ -17,20 +14,17 @@ export const validateName = (name) => {
   return trimmedName.length >= 2 && trimmedName.length <= 50;
 };
 
-// Phone number validation
 export const validatePhone = (phone) => {
-  if (!phone) return true; // Optional field
+  if (!phone) return true; 
   const phoneRegex = /^\d+$/;
   return phoneRegex.test(phone);
 };
 
-// Card number validation
 export const validateCardNumber = (cardNumber) => {
   const cleaned = cardNumber.replace(/\s/g, '');
   return cleaned.length === 16 && /^\d+$/.test(cleaned);
 };
 
-// Card expiry validation
 export const validateCardExpiry = (expiry) => {
   const expiryRegex = /^(0[1-9]|1[0-2])\/([0-9]{2})$/;
   if (!expiryRegex.test(expiry)) return false;
@@ -49,12 +43,10 @@ export const validateCardExpiry = (expiry) => {
   return true;
 };
 
-// CVV validation
 export const validateCVV = (cvv) => {
   return /^\d{3,4}$/.test(cvv);
 };
 
-// Form validation for registration
 export const validateRegistrationForm = (formData) => {
   const errors = {};
 
@@ -84,7 +76,6 @@ export const validateRegistrationForm = (formData) => {
   };
 };
 
-// Form validation for login
 export const validateLoginForm = (email, password) => {
   const errors = {};
 
@@ -104,7 +95,6 @@ export const validateLoginForm = (email, password) => {
   };
 };
 
-// Form validation for checkout
 export const validateCheckoutForm = (paymentMethod, cardInfo, receiptFile, cartItems) => {
   const errors = {};
 
@@ -140,7 +130,6 @@ export const validateCheckoutForm = (paymentMethod, cardInfo, receiptFile, cartI
   };
 };
 
-// Product validation
 export const validateProduct = (product) => {
   const errors = {};
 

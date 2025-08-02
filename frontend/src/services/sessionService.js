@@ -1,29 +1,25 @@
-// Session management service for automatic timeout and activity tracking
 import apiService from './apiService.js';
 
 class SessionService {
   constructor() {
-    this.timeoutDuration = 15 * 60 * 1000; // 15 minutes in milliseconds
+    this.timeoutDuration = 15 * 60 * 1000; 
     this.timeoutId = null;
     this.activityEvents = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
     this.onTimeout = null;
   }
 
-  // Initialize session tracking
   init(onTimeoutCallback) {
     this.onTimeout = onTimeoutCallback;
     this.resetTimer();
     this.setupActivityListeners();
   }
 
-  // Setup activity event listeners
   setupActivityListeners() {
     this.activityEvents.forEach(event => {
       document.addEventListener(event, () => this.resetTimer(), true);
     });
   }
 
-  // Reset the timeout timer
   resetTimer() {
     if (this.timeoutId) {
       clearTimeout(this.timeoutId);
@@ -36,7 +32,6 @@ class SessionService {
     }, this.timeoutDuration);
   }
 
-  // Update user activity on the backend
   async updateActivity(userId) {
     try {
       if (!userId) return;
@@ -48,7 +43,6 @@ class SessionService {
     }
   }
 
-  // Clear session tracking
   clear() {
     if (this.timeoutId) {
       clearTimeout(this.timeoutId);
@@ -60,10 +54,7 @@ class SessionService {
     });
   }
 
-  // Get remaining time in minutes
   getRemainingTime() {
-    // This would calculate remaining time based on last activity
-    // For now, return a placeholder
     return 15;
   }
 }

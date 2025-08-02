@@ -1,10 +1,6 @@
-// API Service Layer for Hero Threads Frontend
-// Handles all communication with the backend API
-
 const API_BASE_URL = 'http://127.0.0.1:3000/api';
 
 class ApiService {
-  // Generic request method
   async request(endpoint, options = {}) {
     const url = `${API_BASE_URL}${endpoint}`;
     const config = {
@@ -30,7 +26,6 @@ class ApiService {
     }
   }
 
-  // Authentication APIs
   async login(email, password) {
     return this.request('/login', {
       method: 'POST',
@@ -39,13 +34,41 @@ class ApiService {
   }
 
   async register(userData) {
-    return this.request('/clientes/register/public', {
+    return this.request('/auth/register', {
       method: 'POST',
       body: JSON.stringify(userData),
     });
   }
 
-  // Product APIs
+  async forgotPassword(email) {
+    return this.request('/auth/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    });
+  }
+
+  async validateResetToken(token) {
+    return this.request(`/auth/validate-reset-token/${token}`);
+  }
+
+  async resetPassword(token, password) {
+    return this.request('/auth/reset-password', {
+      method: 'POST',
+      body: JSON.stringify({ token, password }),
+    });
+  }
+
+  async getGoogleAuthUrl() {
+    return this.request('/auth/google/url');
+  }
+
+  async handleGoogleCallback(code) {
+    return this.request('/auth/google/callback', {
+      method: 'POST',
+      body: JSON.stringify({ code }),
+    });
+  }
+
   async getProducts() {
     return this.request('/productos');
   }
@@ -77,6 +100,10 @@ class ApiService {
 
   async getCustomer(id) {
     return this.request(`/clientes/obtener/${id}`);
+  }
+
+  async getCustomerPurchases(customerId) {
+    return this.request(`/clientes/${customerId}/purchases`);
   }
 
   async updateCustomer(id, customerData) {
@@ -147,7 +174,6 @@ class ApiService {
     });
   }
 
-  // Health check
   async healthCheck() {
     try {
       const response = await fetch(`${API_BASE_URL}/health`);
@@ -158,6 +184,5 @@ class ApiService {
   }
 }
 
-// Create and export a singleton instance
 const apiService = new ApiService();
 export default apiService; 

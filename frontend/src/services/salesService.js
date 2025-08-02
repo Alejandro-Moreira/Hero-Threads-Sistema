@@ -1,20 +1,15 @@
-// Sales Service for handling purchase transactions
 import apiService from './apiService';
 
 class SalesService {
-  // Create a new sale/order
   async createSale(saleData) {
     try {
-      // First try to use the sales API if available
       return await apiService.createSale(saleData);
     } catch (error) {
       console.log('Sales API not available, creating local transaction record');
-      // If sales API is not available, we'll store locally for now
       return this.createLocalSale(saleData);
     }
   }
 
-  // Create a local sale record (fallback)
   createLocalSale(saleData) {
     const sale = {
       id: Date.now().toString(),
@@ -23,7 +18,6 @@ class SalesService {
       status: 'completed'
     };
 
-    // Store in localStorage as fallback
     const existingSales = JSON.parse(localStorage.getItem('hero-threads-sales') || '[]');
     existingSales.push(sale);
     localStorage.setItem('hero-threads-sales', JSON.stringify(existingSales));
@@ -31,7 +25,6 @@ class SalesService {
     return sale;
   }
 
-  // Get all sales
   async getSales() {
     try {
       return await apiService.getSales();
@@ -41,12 +34,10 @@ class SalesService {
     }
   }
 
-  // Get local sales (fallback)
   getLocalSales() {
     return JSON.parse(localStorage.getItem('hero-threads-sales') || '[]');
   }
 
-  // Process a complete purchase
   async processPurchase(cartItems, user, paymentMethod, receiptFile = null) {
     const saleData = {
       customer: {
@@ -78,7 +69,6 @@ class SalesService {
     }
   }
 
-  // Get sales statistics
   async getSalesStats() {
     try {
       const sales = await this.getSales();
@@ -88,7 +78,7 @@ class SalesService {
         totalRevenue: sales.reduce((sum, sale) => sum + sale.total, 0),
         averageOrderValue: sales.length > 0 ? sales.reduce((sum, sale) => sum + sale.total, 0) / sales.length : 0,
         paymentMethods: this.getPaymentMethodStats(sales),
-        recentSales: sales.slice(-5) // Last 5 sales
+        recentSales: sales.slice(-5) 
       };
 
       return stats;
@@ -104,7 +94,6 @@ class SalesService {
     }
   }
 
-  // Get payment method statistics
   getPaymentMethodStats(sales) {
     const stats = {};
     sales.forEach(sale => {

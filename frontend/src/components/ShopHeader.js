@@ -1,30 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import RegisterModal from './RegisterModal';
 import apiService from '../services/apiService';
 
 function ShopHeader({ onSearchChange, cartCount, user, onLogout, onLogin, loginError, onRegister }) {
-    const [showLogin, setShowLogin] = useState(false);
-    const [showRegister, setShowRegister] = useState(false);
-    const [loginEmail, setLoginEmail] = useState('');
-    const [loginPassword, setLoginPassword] = useState('');
     const navigate = useNavigate();
-
-    const handleLoginSubmit = (e) => {
-        e.preventDefault();
-        onLogin(loginEmail, loginPassword);
-        setShowLogin(false);
-    };
-
-    const handleRegister = async (formData) => {
-        try {
-            await apiService.register(formData);
-            alert('Usuario registrado exitosamente. Se ha enviado un email de confirmación a tu correo.');
-        } catch (error) {
-            console.error('Registration error:', error);
-            throw error;
-        }
-    };
 
     return (
         <header className="w-full bg-white shadow-sm fixed top-0 left-0 z-50">
@@ -50,18 +29,18 @@ function ShopHeader({ onSearchChange, cartCount, user, onLogout, onLogin, loginE
                 <div className="flex items-center space-x-4">
                     {!user ? (
                         <div className="flex items-center gap-2">
-                            <button
-                                onClick={() => setShowLogin(true)}
+                            <Link
+                                to="/login"
                                 className="px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition"
                             >
                                 Iniciar Sesión
-                            </button>
-                            <button
-                                onClick={() => setShowRegister(true)}
+                            </Link>
+                            <Link
+                                to="/register"
                                 className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg font-semibold hover:bg-gray-300 transition"
                             >
                                 Registrarse
-                            </button>
+                            </Link>
                         </div>
                     ) : (
                         <>
@@ -90,35 +69,15 @@ function ShopHeader({ onSearchChange, cartCount, user, onLogout, onLogin, loginE
                 </div>
             </div>
             
-            {/* Login Modal */}
-            {showLogin && (
-                <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-sm relative">
-                        <button onClick={() => setShowLogin(false)} className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 text-2xl">&times;</button>
-                        <h2 className="text-2xl font-bold mb-6 text-center">Iniciar Sesión</h2>
-                        <form className="space-y-4" onSubmit={handleLoginSubmit}>
-                            <input type="email" placeholder="Correo electrónico" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 transition" value={loginEmail} onChange={e => setLoginEmail(e.target.value)} required />
-                            <input type="password" placeholder="Contraseña" className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 transition" value={loginPassword} onChange={e => setLoginPassword(e.target.value)} required />
-                            {loginError && <div className="text-red-600 text-sm text-center">{loginError}</div>}
-                            <button type="submit" className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 font-semibold transition">Entrar</button>
-                            <div className="text-xs text-gray-500 mt-2 text-center">
-                                <div><b>Admin:</b> admin@admin.com / admin123</div>
-                                <div><b>Cliente:</b> cliente@cliente.com / cliente123</div>
-                            </div>
-                            <div className="text-xs text-blue-600 mt-2 text-center border-t pt-2">
-                                <p><strong>Nota:</strong> Los usuarios nuevos deben verificar su email antes de iniciar sesión.</p>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
-            
-            {/* Register Modal */}
-            <RegisterModal
-                isOpen={showRegister}
-                onClose={() => setShowRegister(false)}
-                onRegister={handleRegister}
-            />
+            {/* Mobile Search */}
+            <div className="md:hidden px-4 pb-4">
+                <input
+                    type="text"
+                    placeholder="Buscar productos..."
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                    onChange={(e) => onSearchChange(e.target.value)}
+                />
+            </div>
         </header>
     );
 }

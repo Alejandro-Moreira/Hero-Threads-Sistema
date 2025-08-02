@@ -1,18 +1,11 @@
-// Email service utility for sending confirmation emails
-// In a real application, this would integrate with services like SendGrid, Mailgun, or AWS SES
-
 export const sendConfirmationEmail = async (userEmail, userName) => {
   // Simulate email sending
   console.log(`Sending confirmation email to: ${userEmail}`);
   console.log(`Email content: Dear ${userName}, thank you for registering with Hero Threads!`);
   
-  // In a real implementation, you would:
-  // 1. Call your backend API endpoint for sending emails
-  // 2. Use a service like SendGrid, Mailgun, or AWS SES
-  // 3. Include a confirmation link with a token
+
   
      try {
-     // Simulate API call to backend email service
      const response = await fetch('http://127.0.0.1:3000/api/email/send-confirmation', {
        method: 'POST',
        headers: {
@@ -34,7 +27,6 @@ export const sendConfirmationEmail = async (userEmail, userName) => {
     }
   } catch (error) {
     console.error('Error sending confirmation email:', error);
-    // For demo purposes, we'll return true even if the email service fails
     return true;
   }
 };
@@ -65,6 +57,6 @@ export const sendOrderConfirmation = async (userEmail, userName, orderDetails) =
     }
   } catch (error) {
     console.error('Error sending order confirmation email:', error);
-    return true; // For demo purposes
+    return true; 
   }
 }; 

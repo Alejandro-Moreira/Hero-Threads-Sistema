@@ -8,6 +8,7 @@ import routerReportes from "./routers/router_reportes.js";
 import routerEmail from "./routers/router_email.js";
 import routerVentas from "./routers/router_ventas.js";
 import routerSession from "./routers/router_session.js";
+import routerAuth from "./routers/router_auth.js";
 
 // Inicializaciones
 dotenv.config();
@@ -25,12 +26,22 @@ app.use(express.static("public"));
 
 // Rutas
 app.use("/api/login", routerLogin);
+app.use("/api/auth", routerAuth);
 app.use("/api/clientes", routerCliente);
 app.use("/api/productos", routerProductos);
 app.use("/api/reportes", routerReportes);
 app.use("/api/email", routerEmail);
 app.use("/api/ventas", routerVentas);
 app.use("/api/session", routerSession);
+
+// Health check endpoint
+app.get("/api/health", (req, res) => {
+  res.status(200).json({ 
+    status: "ok", 
+    message: "Hero Threads API is running",
+    timestamp: new Date().toISOString()
+  });
+});
 
 // Fallback 404
 app.use((req, res) => res.status(404).send("Endpoint no encontrado - 404"));

@@ -2,8 +2,7 @@ import React from 'react';
 
 function ShopProductCard({ product, onAddToCart }) {
     return (
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-2xl">
-            <div className="relative w-full h-64 overflow-hidden">
+<div className="bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-2xl border border-gray-200 hover:border-gray-400 hover:border-2 transition-colors">            <div className="relative w-full h-64 overflow-hidden">
                 <img
                     src={product.image}
                     alt={product.name}
